@@ -1,0 +1,12 @@
+{
+  "name": "US Street Mini-Map",
+  "short_name": "US Mini-Map",
+  "description": "A Need for Speed-inspired GPS mini-map for the United States.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#080d12",
+  "theme_color": "#080d12",
+  "icons": []
+}
