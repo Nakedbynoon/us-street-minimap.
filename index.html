@@ -1,24 +1,354 @@
 
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#080d12"><meta name="description" content="A Need for Speed-inspired live GPS mini-map for the United States, starting in Florida."><link rel="manifest" href="manifest.webmanifest"><title>US Street Mini-Map</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#050b14">
+<title>Street MiniMap | Underground</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-:root{color-scheme:dark;--cyan:#22e6ff;--panel:rgba(5,12,18,.88)}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#080d12;color:#eafaff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden}#map{position:absolute;inset:0;background:#0a1118}.leaflet-container{background:#0a1118}.hud{position:absolute;z-index:900;pointer-events:none}.top{top:env(safe-area-inset-top,10px);left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.brand{background:var(--panel);border:1px solid #22e6ffb3;box-shadow:0 0 18px #00d9ff20;padding:10px 13px;border-radius:12px;backdrop-filter:blur(8px)}.brand b{display:block;letter-spacing:.12em;font-size:12px;color:var(--cyan)}.brand span{display:block;font-size:10px;opacity:.78;margin-top:2px;letter-spacing:.08em}.status{background:var(--panel);border:1px solid #ffffff26;padding:9px 11px;border-radius:12px;font-size:11px;text-align:right;max-width:48%}#status{color:var(--cyan);font-weight:700}.bottom{left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);display:flex;flex-direction:column;gap:10px}.readout{display:flex;gap:8px}.metric{flex:1;min-width:0;background:var(--panel);border:1px solid #ffffff20;border-radius:12px;padding:10px 12px;backdrop-filter:blur(8px)}.metric label{display:block;color:#91a7b6;font-size:9px;letter-spacing:.13em}.metric strong{display:block;font-size:18px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.buttons{display:flex;gap:8px;pointer-events:auto}button{flex:1;border:1px solid #22e6ff88;background:rgba(5,16,24,.94);color:#eafaff;border-radius:12px;padding:13px 9px;font-size:12px;font-weight:750;letter-spacing:.04em;touch-action:manipulation}button.primary{background:linear-gradient(135deg,#00bfd7,#1477a9);color:#001016;border-color:#58f1ff}button:active{transform:scale(.98)}.hint{font-size:10px;color:#9fb2c0;text-align:center;text-shadow:0 1px 5px #000}.car-wrap{width:36px;height:46px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 0 7px #22e6ff99)}.car{width:24px;height:38px;background:linear-gradient(180deg,#fff,#a6f6ff 42%,#00aeca);border:2px solid #06242e;border-radius:9px 9px 6px 6px;clip-path:polygon(35% 0,65% 0,88% 20%,100% 75%,80% 100%,20% 100%,0 75%,12% 20%);position:relative}.car:after{content:"";position:absolute;left:5px;right:5px;top:8px;height:12px;background:#102b3a;border:1px solid #5ff4ff;border-radius:4px}.leaflet-control-attribution{font-size:9px!important;background:rgba(0,0,0,.65)!important;color:#b6c7d2!important}.leaflet-control-attribution a{color:#54eaff!important}.leaflet-control-zoom{display:none}#permission{position:absolute;z-index:1000;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(180deg,rgba(3,8,13,.45),rgba(3,8,13,.9))}.dialog{max-width:360px;width:100%;border:1px solid #22e6ff77;border-radius:18px;background:#07121bea;padding:22px;box-shadow:0 0 36px #00d9ff24;text-align:center}.dialog h1{font-size:19px;letter-spacing:.08em;margin:0 0 8px;color:var(--cyan)}.dialog p{font-size:13px;line-height:1.5;color:#c3d4de;margin:0 0 18px}.dialog button{width:100%}.small{font-size:10px!important;opacity:.75;margin-top:12px!important}@media(min-width:700px){.bottom{max-width:480px;left:20px;right:auto}.top{left:20px;right:20px}}
-</style></head><body>
-<div id="map" aria-label="Live GPS mini-map"></div><div class="hud top"><div class="brand"><b>US STREET // MINI-MAP</b><span>ARCADE GPS SYSTEM · FL → USA</span></div><div class="status"><div id="status">GPS STANDBY</div><div id="gps-sub">Map ready · Florida</div></div></div>
-<div class="hud bottom"><div class="readout"><div class="metric"><label>SPEED</label><strong><span id="speed">--</span> <small style="font-size:10px;color:#91a7b6">MPH</small></strong></div><div class="metric"><label>HEADING</label><strong id="heading">---°</strong></div><div class="metric"><label>GPS ACCURACY</label><strong id="accuracy">--</strong></div></div><div class="buttons"><button class="primary" id="gpsBtn">◎ START GPS</button><button id="followBtn">FOLLOW: ON</button><button id="northBtn">NORTH UP</button></div><div class="hint">Use only as a visual companion. Keep your eyes on the road and obey traffic laws.</div></div>
-<div id="permission"><div class="dialog"><h1>READY TO DRIVE?</h1><p>A live, dark arcade-style mini-map for your phone. Start in Florida and pan/zoom anywhere in the United States. GPS needs location permission and a secure HTTPS website.</p><button class="primary" id="startBtn">ENABLE GPS &amp; OPEN MAP</button><p class="small">Map tiles require internet. Location is read by your browser and is not sent to a custom server by this app.</p></div></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script><script>
-const map=L.map('map',{zoomControl:false,attributionControl:true,preferCanvas:true}).setView([28.5383,-81.3792],10);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  maxZoom: 19,
-  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+*{box-sizing:border-box}
+body{margin:0;background:#050b14;color:white;font-family:Arial,sans-serif}
+#map{position:absolute;inset:0;background:#091522}
+.leaflet-tile{filter:brightness(.75) saturate(.8) hue-rotate(155deg)}
+.hud{position:absolute;z-index:1000;left:12px;right:12px;pointer-events:none}
+.top{top:12px;display:flex;justify-content:space-between;gap:8px}
+.brand,.panel,.btn{background:#061321ee;border:1px solid #00f6ff;border-radius:10px;box-shadow:0 0 12px #00f6ff33}
+.brand{padding:10px}
+.brand strong{color:#00f6ff;font-size:13px;letter-spacing:2px;text-shadow:0 0 8px #00f6ff}
+.brand small{display:block;margin-top:5px;color:#a5cbd7;font-size:10px}
+#gpsStatus{font-size:10px;color:#ffcf48;margin-top:5px}
+.controls{display:flex;flex-direction:column;gap:6px;pointer-events:auto}
+.btn{color:#00f6ff;padding:10px;font-weight:bold;font-size:11px}
+.search{position:absolute;z-index:1001;top:105px;left:12px;right:12px;display:flex;gap:6px}
+input{min-width:0;flex:1;padding:12px;background:#061321;color:white;border:1px solid #ff2bd6;border-radius:8px}
+#message{position:absolute;z-index:1000;top:155px;left:12px;right:12px;font-size:12px;text-shadow:0 1px 4px black}
+.bottom{bottom:14px;display:flex;align-items:flex-end;gap:8px}
+.panel{padding:10px}
+.speed{min-width:115px}
+.label{font-size:10px;letter-spacing:2px;color:#00f6ff}
+#speed{font-size:40px;font-weight:bold;text-shadow:0 0 12px #00f6ff}
+.unit{font-size:10px;color:#a5cbd7}
+.route{flex:1;min-width:0}
+#instruction{font-size:12px;margin-top:7px}
+#distance{font-size:11px;color:#00f6ff;margin-top:6px}
+.player{color:#00f6ff;font-size:30px;text-shadow:0 0 6px #00f6ff,0 0 16px #00f6ff}
+.gas{font-size:23px}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#061321;color:white}
+@media(max-height:600px){#speed{font-size:30px}.panel{padding:7px}.search{top:90px}#message{top:140px}}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="hud top">
+<div class="brand">
+<strong>UNDERGROUND // GPS</strong>
+<small>STREET MINIMAP</small>
+<div id="gpsStatus">GPS: WAITING</div>
+</div>
+<div class="controls">
+<button class="btn" id="follow">FOLLOW: ON</button>
+<button class="btn" id="gasButton">FIND GAS</button>
+</div>
+</div>
+<div class="search">
+<input id="destination" placeholder="Enter destination or address">
+<button class="btn" id="go">GO</button>
+</div>
+<div id="message">Waiting for GPS permission...</div>
+<div class="hud bottom">
+<div class="panel speed">
+<div class="label">LIVE SPEED</div>
+<div id="speed">0</div>
+<div class="unit">MPH</div>
+</div>
+<div class="panel route">
+<div class="label">NAVIGATION</div>
+<div id="instruction">Ready to drive</div>
+<div id="distance">Enter a destination above</div>
+</div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const $ = id => document.getElementById(id);
+let position = null, marker = null, circle = null;
+let following = true, routeLayer = null, gasLayer = null;
+let routePoints = [], lastGasSearch = 0;
+
+const map = L.map("map", {zoomControl:false})
+  .setView([28.5383,-81.3792], 14);
+
+L.control.zoom({position:"bottomright"}).addTo(map);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom:19,
+  attribution:'&copy; OpenStreetMap contributors'
 }).addTo(map);
-let marker=null,watchId=null,follow=true,northUp=true,lastHeading=0;const $=id=>document.getElementById(id);function setStatus(a,b){$('status').textContent=a;$('gps-sub').textContent=b}function carIcon(angle){return L.divIcon({className:'',html:`<div class="car-wrap" style="transform:rotate(${angle}deg)"><div class="car"></div></div>`,iconSize:[36,46],iconAnchor:[18,23]})}
-function updatePosition(pos){const c=pos.coords,ll=[c.latitude,c.longitude];const mph=c.speed==null?null:c.speed*2.236936;if(typeof c.heading==='number'&&!Number.isNaN(c.heading))lastHeading=c.heading;$('speed').textContent=mph==null?'--':Math.round(mph);$('heading').textContent=`${Math.round(lastHeading)}°`;$('accuracy').textContent=c.accuracy?`${Math.round(c.accuracy)} m`:'--';setStatus('GPS LOCKED',`${c.latitude.toFixed(4)}, ${c.longitude.toFixed(4)}`);if(!marker)marker=L.marker(ll,{icon:carIcon(northUp?lastHeading:0),keyboard:false}).addTo(map);else marker.setLatLng(ll).setIcon(carIcon(northUp?lastHeading:0));if(follow)map.panTo(ll,{animate:true,duration:.4})}
-function startGPS(){$('permission').style.display='none';if(!('geolocation'in navigator)){setStatus('GPS UNAVAILABLE','Browser does not support location');return}if(watchId!==null)return;setStatus('SEARCHING GPS','Allow location access if prompted');watchId=navigator.geolocation.watchPosition(updatePosition,err=>{const msg={1:'Location permission denied',2:'GPS position unavailable',3:'GPS request timed out'};setStatus('GPS ERROR',msg[err.code]||err.message);if(err.code===1)watchId=null},{enableHighAccuracy:true,maximumAge:1000,timeout:15000});$('gpsBtn').textContent='GPS ACTIVE'}
-$('startBtn').addEventListener('click',startGPS);$('gpsBtn').addEventListener('click',startGPS);$('followBtn').addEventListener('click',()=>{follow=!follow;$('followBtn').textContent=`FOLLOW: ${follow?'ON':'OFF'}`;if(follow&&marker)map.panTo(marker.getLatLng())});$('northBtn').addEventListener('click',()=>{northUp=!northUp;$('northBtn').textContent=northUp?'NORTH UP':'CAR HEADING';if(marker)marker.setIcon(carIcon(northUp?lastHeading:0))});window.addEventListener('deviceorientation',e=>{let h=typeof e.webkitCompassHeading==='number'?e.webkitCompassHeading:(typeof e.alpha==='number'?360-e.alpha:null);if(h!==null&&Number.isFinite(h)){lastHeading=h;$('heading').textContent=`${Math.round(h)}°`;if(marker)marker.setIcon(carIcon(northUp?h:0))}});if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-</script></body></html>
+
+gasLayer = L.layerGroup().addTo(map);
+
+function message(text) {
+  $("message").textContent = text;
+}
+
+function playerIcon() {
+  return L.divIcon({
+    className:"",
+    html:'<div class="player">▲</div>',
+    iconSize:[34,34],
+    iconAnchor:[17,17]
+  });
+}
+
+function gpsError(error) {
+  $("gpsStatus").textContent = "GPS: UNAVAILABLE";
+  if (error.code === 1) {
+    message("Allow location permission for this website in Chrome.");
+  } else {
+    message("GPS unavailable. Check location settings and try outdoors.");
+  }
+}
+
+function updateGPS(data) {
+  const c = data.coords;
+  position = [c.latitude,c.longitude];
+
+  $("gpsStatus").textContent =
+    "GPS: ACTIVE • ±" + Math.round(c.accuracy || 0) + "m";
+
+  $("speed").textContent =
+    Math.round(Math.max(0,(c.speed || 0) * 2.236936));
+
+  if (!marker) {
+    marker = L.marker(position,{icon:playerIcon(),zIndexOffset:1000})
+      .addTo(map);
+    circle = L.circle(position,{
+      radius:c.accuracy || 20,
+      color:"#00f6ff",
+      fillColor:"#00f6ff",
+      fillOpacity:.07
+    }).addTo(map);
+    map.setView(position,17);
+  } else {
+    marker.setLatLng(position);
+    circle.setLatLng(position);
+    circle.setRadius(c.accuracy || 20);
+  }
+
+  if (following) map.panTo(position);
+  updateRouteProgress();
+}
+
+if ("geolocation" in navigator) {
+  navigator.geolocation.watchPosition(updateGPS,gpsError,{
+    enableHighAccuracy:true,
+    maximumAge:1000,
+    timeout:20000
+  });
+} else {
+  message("This browser does not support GPS.");
+}
+
+$("follow").onclick = () => {
+  following = !following;
+  $("follow").textContent = "FOLLOW: " + (following ? "ON" : "OFF");
+  if (following && position) map.panTo(position);
+};
+
+function clearRoute() {
+  if (routeLayer) map.removeLayer(routeLayer);
+  routeLayer = null;
+  routePoints = [];
+}
+
+function distanceText(m) {
+  return m < 1000 ? Math.round(m) + " m" :
+    (m/1000).toFixed(1) + " km";
+}
+
+async function makeRoute(lat,lon,name) {
+  if (!position) {
+    message("Waiting for GPS before calculating a route.");
+    return;
+  }
+
+  message("Calculating route...");
+  $("instruction").textContent = "Finding route...";
+  $("distance").textContent = "";
+
+  try {
+    const start = position[1] + "," + position[0];
+    const end = lon + "," + lat;
+    const url =
+      "https://router.project-osrm.org/route/v1/driving/" +
+      start + ";" + end +
+      "?overview=full&geometries=geojson&steps=true";
+
+    const response = await fetch(url);
+    if (!response.ok) throw Error("Route service unavailable");
+
+    const result = await response.json();
+    if (result.code !== "Ok" || !result.routes.length) {
+      throw Error("No route found");
+    }
+
+    clearRoute();
+    const route = result.routes[0];
+
+    routeLayer = L.geoJSON(route.geometry,{
+      style:{color:"#ff2bd6",weight:6,opacity:.95}
+    }).addTo(map);
+
+    routePoints = route.geometry.coordinates;
+    map.fitBounds(routeLayer.getBounds(),{padding:[40,40]});
+
+    $("instruction").textContent = "Route to " + name;
+    $("distance").textContent =
+      distanceText(route.distance) + " • about " +
+      Math.round(route.duration/60) + " min";
+
+    message("Route ready. Follow road signs and drive safely.");
+  } catch (e) {
+    message("Route failed. Check your connection and try again.");
+    $("instruction").textContent = "Route unavailable";
+    $("distance").textContent = "Public routing service may be busy";
+  }
+}
+
+$("go").onclick = async () => {
+  const query = $("destination").value.trim();
+  if (!query) {
+    message("Enter a destination first.");
+    return;
+  }
+
+  message("Searching for destination...");
+  try {
+    const url =
+      "https://nominatim.openstreetmap.org/search?format=json&limit=1&q=" +
+      encodeURIComponent(query);
+
+    const response = await fetch(url);
+    if (!response.ok) throw Error("Search failed");
+
+    const results = await response.json();
+    if (!results.length) {
+      message("Place not found. Try entering a full address.");
+      return;
+    }
+
+    await makeRoute(
+      Number(results[0].lat),
+      Number(results[0].lon),
+      results[0].display_name.split(",")[0]
+    );
+  } catch (e) {
+    message("Destination search failed. Check your internet.");
+  }
+};
+
+$("destination").addEventListener("keydown",e => {
+  if (e.key === "Enter") $("go").click();
+});
+
+function updateRouteProgress() {
+  if (!position || !routePoints.length) return;
+
+  let nearest = Infinity;
+  routePoints.forEach(p => {
+    const dy = (p[1]-position[0])*111320;
+    const dx = (p[0]-position[1])*111320*
+      Math.cos(position[0]*Math.PI/180);
+    nearest = Math.min(nearest,Math.hypot(dx,dy));
+  });
+
+  if (nearest < 35) {
+    $("instruction").textContent = "Continue on highlighted route";
+  } else if (nearest < 100) {
+    $("instruction").textContent = "Follow highlighted route";
+  } else {
+    $("instruction").textContent = "You may be off route";
+  }
+}
+
+$("gasButton").onclick = async () => {
+  if (!position) {
+    message("Waiting for GPS to find nearby gas stations.");
+    return;
+  }
+
+  if (Date.now()-lastGasSearch < 10000) {
+    message("Wait a few seconds before searching again.");
+    return;
+  }
+
+  lastGasSearch = Date.now();
+  gasLayer.clearLayers();
+  message("Searching for gas stations nearby...");
+
+  const lat = position[0], lon = position[1];
+  const query =
+    '[out:json][timeout:20];(' +
+    'node["amenity"="fuel"](around:5000,'+lat+','+lon+');' +
+    'way["amenity"="fuel"](around:5000,'+lat+','+lon+');' +
+    ');out center tags;';
+
+  try {
+    const response = await fetch(
+      "https://overpass-api.de/api/interpreter",
+      {
+        method:"POST",
+        headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:"data="+encodeURIComponent(query)
+      }
+    );
+
+    if (!response.ok) throw Error("Gas search unavailable");
+    const result = await response.json();
+
+    const places = (result.elements || []).filter(
+      p => p.lat != null || p.center?.lat != null
+    );
+
+    if (!places.length) {
+      message("No mapped gas stations found within 5 km.");
+      return;
+    }
+
+    places.forEach(p => {
+      const glat = p.lat ?? p.center.lat;
+      const glon = p.lon ?? p.center.lon;
+      const name = p.tags?.name || "Gas station";
+
+      const icon = L.divIcon({
+        className:"",
+        html:'<div class="gas">⛽</div>',
+        iconSize:[28,28],
+        iconAnchor:[14,14]
+      });
+
+      const gas = L.marker([glat,glon],{icon}).addTo(gasLayer);
+      const content = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = name;
+      content.appendChild(title);
+      content.appendChild(document.createElement("br"));
+
+      const button = document.createElement("button");
+      button.textContent = "Route here";
+      button.onclick = () => makeRoute(glat,glon,name);
+      content.appendChild(button);
+      gas.bindPopup(content);
+    });
+
+    message("Found " + places.length +
+      " mapped gas stations within about 5 km.");
+  } catch (e) {
+    message("Gas search unavailable. Try again later.");
+  }
+};
+</script>
+</body>
+</html>
